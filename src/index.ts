@@ -49,7 +49,7 @@ export class Bitrix24 {
   }
 
   private async refreshToken() {
-    const { domain, clientId, clientSecret, refreshToken } = this.oauthConfig;
+    const { clientId, clientSecret, refreshToken } = this.oauthConfig;
 
     if (!clientId || !clientSecret || !refreshToken) {
       throw new Error("Missing oauth data");

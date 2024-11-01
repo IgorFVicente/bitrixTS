@@ -1,5 +1,15 @@
 import { Bitrix24 } from "src";
-import { CRMAdd, CRMListOptions, CRMUpdate } from "src/Types/CRMTypes";
+import {
+  LeadAdd,
+  LeadAddResponse,
+  LeadDeleteResponse,
+  LeadFieldsResponse,
+  LeadGetResponse,
+  LeadList,
+  LeadListResponse,
+  LeadUpdate,
+  LeadUpdateResponse,
+} from "./types";
 
 export class Lead {
   private readonly bitrix24: Bitrix24;
@@ -8,48 +18,51 @@ export class Lead {
     this.bitrix24 = bitrix24;
   }
 
-  async add({ fields, params }: CRMAdd) {
-    const response = await this.bitrix24.call("crm.lead.add", {
-      fields,
-      params,
-    });
-
-    return await response.json();
-  }
-
-  async get(id: string) {
-    if (isNaN(parseFloat(id))) {
-      throw new Error("Invalid Id");
+  public async get(id: string): Promise<LeadGetResponse> {
+    if (isNaN(parseInt(id))) {
+      throw new Error("Id must be numeric");
     }
 
-    const response = await this.bitrix24.call("crm.lead.get", { id });
-    return await response.json();
+    return await this.bitrix24.call("crm.lead.get", { id });
   }
 
-  async delete(id: string) {
-    if (isNaN(parseFloat(id))) {
-      throw new Error("Invalid Id");
-    }
-
-    const response = await this.bitrix24.call("crm.lead.delete", { id });
-    return await response.json();
-  }
-
-  async list({ order, filter, select }: CRMListOptions) {
-    const response = await this.bitrix24.call("crm.lead.get", {
+  public async list({
+    order,
+    filter,
+    select,
+  }: LeadList): Promise<LeadListResponse> {
+    return await this.bitrix24.call("crm.lead.get", {
       order,
       filter,
       select,
     });
-    return await response.json();
   }
 
-  async update({ id, fields }: CRMUpdate) {
-    const response = await this.bitrix24.call("crm.lead.update", {
+  public async add({ fields, params }: LeadAdd): Promise<LeadAddResponse> {
+    return await this.bitrix24.call("crm.lead.add", {
+      fields,
+      params,
+    });
+  }
+
+  public async update({ id, fields }: LeadUpdate): Promise<LeadUpdateResponse> {
+    return await this.bitrix24.call("crm.lead.update", {
       id,
       fields,
     });
+  }
 
-    return await response.json();
+  public async delete(id: string): Promise<LeadDeleteResponse> {
+    if (isNaN(parseInt(id))) {
+      throw new Error("Id must be numeric");
+    }
+
+    return await this.bitrix24.call("crm.lead.delete", {
+      id,
+    });
+  }
+
+  public async fields(): Promise<LeadFieldsResponse> {
+    return await this.bitrix24.call("crm.lead.fields");
   }
 }
